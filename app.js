@@ -1,9 +1,9 @@
-"use strict"; //Activa el modo estricto en JS -Hace que JavaScript sea mas exigente
+"use strict";
 
 /*
-tareas es un arreglo donde se guardan las tareas y cada tarea sera un objeto siguiente
-ID genera un identificador diferente para cada tarea 
-filtroActual indica que mostrar: todas, pendientes o completas
+tareas es un arreglo donde se guardan las tareas
+siguienteId genera un identificador diferente para cada tarea
+filtroActual indica qué mostrar: todas, pendientes o completas
 */
 
 const tareas = [];
@@ -11,158 +11,221 @@ let siguienteId = 1;
 let filtroActual = "todas";
 
 /*
-Referencias al DOM:
-querySelector() busca elementos del HTML usando selectores CSS
-
+Referencias al DOM
 */
+
 const formulario = document.querySelector("#formulario");
 const campoTitulo = document.querySelector("#titulo");
 const mensaje = document.querySelector("#mensaje");
 const lista = document.querySelector("#lista");
 const vacio = document.querySelector("#vacio");
 const filtros = document.querySelector(".filtros");
+const contador = document.querySelector("#contador");
 
 /*
-Agregar una nueva tarea en el formulario
-
+Agregar una nueva tarea
 */
 
 formulario.addEventListener("submit", (evento) => {
-  evento.preventDefault(); //Evita que el formulario recargue la pagina
+  evento.preventDefault();
 
-  const titulo = campoTitulo.value.trim(); //Obtiene el texto y elimina espacios externos
+  const titulo = campoTitulo.value.trim();
 
-  //Se valida que haya texto
+  // Validar que haya texto
   if (!titulo) {
-    mensaje.textContent = "Escriba una descripcion antes de agregar";
+    mensaje.textContent = "Escriba una descripción antes de agregar";
     campoTitulo.focus();
     return;
   }
 
-  //Se crea el objeto Tarea
+  // Crear objeto tarea
   const nuevaTarea = {
     id: siguienteId,
     titulo: titulo,
     completada: false,
   };
 
-  //Guarda la tarea en el arreglo
+  // Guardar tarea
   tareas.push(nuevaTarea);
 
-  //Preparar el id para la siguiente tarea
+  // Preparar ID para la siguiente tarea
   siguienteId++;
 
-  //Util para observar los datos en clase
-  console.log("Tareas Actuales: ", tareas);
+  console.log("Tareas actuales:", tareas);
 
-  //Limpiar formulario
+  // Limpiar formulario
   formulario.reset();
 
   mensaje.textContent = "";
   campoTitulo.focus();
 
-  //Vuelve a recargar la lista
+  // Actualizar lista
   renderizar();
 });
 
 /*
-
 Renderiza las tareas
-Se toma los datos de JavaScript y mostrarlos en el HTML
 */
 
 function renderizar() {
-  //Limpia la lista visual antes de volver a dibujarla
-
+  // Limpiar lista visual
   lista.replaceChildren();
 
   const visibles = obtenerTareasVisibles();
 
   for (const tarea of visibles) {
-    //Crear <li>
+
+    // Crear <li>
     const item = document.createElement("li");
     item.className = "tarea";
 
-    //Agrega o quita la clase "completada"
+    // Agregar o quitar clase completada
     item.classList.toggle("completada", tarea.completada);
 
-    //Crear el texto de la tarea
+    // Crear texto
     const titulo = document.createElement("span");
     titulo.className = "titulo-tarea";
     titulo.textContent = tarea.titulo;
 
-    //Contenedor de botones
+    // Contenedor de botones
     const acciones = document.createElement("span");
     acciones.className = "acciones";
 
-    //Boton completar / Reabrir
-    const completar = document.createElement("span");
+    // Botón completar / reabrir
+    const completar = document.createElement("button");
+    completar.type = "button";
     completar.className = "button";
 
-    //Dataset agrega informacion personalizada al boton
     completar.dataset.accion = "alternar";
     completar.dataset.id = String(tarea.id);
 
-    completar.textContent = tarea.completada ? "Reabrir" : "Completar";
+    completar.textContent = tarea.completada
+      ? "Reabrir"
+      : "Completar";
 
-    completar.setAtributte(
-      "aria.label",
-      `${completar.textContent}:${tarea.titulo}`,
+    completar.setAttribute(
+      "aria-label",
+      `${completar.textContent}: ${tarea.titulo}`
     );
 
-    //Boton eliminar
-    const eliminar=document.createElement("button");
-    eliminar.type="button";
-    eliminar.className="eliminar";
-    eliminar.dataset.accion="eliminar";
-    eliminar.dataset.id=String(tarea.id);
-    eliminar.textContent="Eliminar";
-    eliminar.setAtributte(
+    // Botón eliminar
+    const eliminar = document.createElement("button");
+
+    eliminar.type = "button";
+    eliminar.className = "eliminar";
+
+    eliminar.dataset.accion = "eliminar";
+    eliminar.dataset.id = String(tarea.id);
+
+    eliminar.textContent = "Eliminar";
+
+    eliminar.setAttribute(
       "aria-label",
       `Eliminar: ${tarea.titulo}`
     );
 
-    //Insertar elementos
-    acciones.append(completar,eliminar);
-    lista.append(titulo,acciones)
+    // Insertar botones dentro de acciones
+    acciones.append(completar, eliminar);
+
+    // Insertar título y acciones dentro del <li>
+    item.append(titulo, acciones);
+
+    // Insertar <li> dentro de la lista
     lista.append(item);
+  }
 
-  }//Fin del for
-
-  //Contar pendientes
-  const pendientes=tareas.filter(
-    (tarea)=>!tarea.completada
+  // Contar tareas pendientes
+  const pendientes = tareas.filter(
+    (tarea) => !tarea.completada
   ).length;
 
-  contador.textContent=
-  `${pendientes} pendientes de ${tareas,length}`;
+  contador.textContent =
+    `${pendientes} pendientes de ${tareas.length}`;
 
-  //Mostrar mensaje de lista vacia cuando corresponda
-  vacio.hidden=visibles.length>0;
-
-} //Fin funcion renderizar
+  // Mostrar mensaje de lista vacía
+  vacio.hidden = visibles.length > 0;
+}
 
 /*
 Obtener las tareas visibles
-filter() crea un objeto nuevo con los elementos que cumplen una condicion
-
 */
 
-function obtenerTareasVisibles(){
+function obtenerTareasVisibles() {
 
-  if(filtroActual=== "pendientes"){
-    return tareas.filter((tarea =>!tarea.completada));
+  if (filtroActual === "pendientes") {
+    return tareas.filter(
+      (tarea) => !tarea.completada
+    );
   }
 
-  if(filtroActual=== "completadas"){
-    return tareas.filter((tarea =>tarea.completada));
+  if (filtroActual === "completadas") {
+    return tareas.filter(
+      (tarea) => tarea.completada
+    );
   }
+
   return tareas;
+}
 
-}//Fin funcion obtenerTareasVisibles
+/*
+Completar o reabrir y eliminar tareas
+*/
 
+lista.addEventListener("click", (evento) => {
+
+  const boton = evento.target.closest("button");
+
+  if (!boton) {
+    return;
+  }
+
+  const id = Number(boton.dataset.id);
+  const accion = boton.dataset.accion;
+
+  const tarea = tareas.find(
+    (tarea) => tarea.id === id
+  );
+
+  if (!tarea) {
+    return;
+  }
+
+  // Completar / reabrir
+  if (accion === "alternar") {
+    tarea.completada = !tarea.completada;
+  }
+
+  // Eliminar
+  if (accion === "eliminar") {
+    const indice = tareas.findIndex(
+      (tarea) => tarea.id === id
+    );
+
+    tareas.splice(indice, 1);
+  }
+
+  renderizar();
+});
+
+/*
+Filtros
+*/
+
+filtros.addEventListener("click", (evento) => {
+
+  const boton = evento.target.closest("button");
+
+  if (!boton) {
+    return;
+  }
+
+  filtroActual = boton.dataset.filtro;
+
+  renderizar();
+});
+
+/*
+Primera renderización
+*/
 
 renderizar();
-
-
-
