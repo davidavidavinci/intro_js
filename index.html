@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Académica</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="encabezado">
+        <div class="contenedor">
+            <p class="etiqueta">IF0009 - JavaScript</p>
+            <h1>Mi agenda académica</h1>
+            <p>Organiza tus actividades y visualiza tu progreso</p>
+            <!--img src="gato_autista.jpeg" width="300" height="300">
+            <img src="cumming.gif" width="300" height="300">
+            <img src="mono_serio.jpeg" width="300" height="300"-->
+        </div>
+    </header>
+    <main class="contenedor papel">
+        <section aria-labelledby="nuevo-titulo">
+            <h2 id="nuevo-titulo">Nueva tarea</h2>
+            <form id="formulario" novalidate>
+                <label for="titulo">Descripción de la tarea:</label>
+                <div class="fila-formulario">
+                    <input type="text" id="titulo" name="titulo" maxlength="80"
+                    placeholder="Ejemplo: Entra de práctica de Django" required>
+                    <button type="submit">Agregar tarea</button>
+                </div>
+                <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+        <section aria-labelledby="lista-titulo">
+            <div class="cabecera-lista">
+                <h2 id="lista-titulo">Mis tareas</h2>
+                <p id="contador" aria-live="polite">0 pendientes de 0</p>
+            </div>
+            <div class="filtros" role="group" aria-label="Filtrar tareas">
+                <button type="button" data-filtro="todas" class="activo" aria-pressed="true">Todas</button>
+                <button type="button" data-filtro="pendientes" aria-pressed="true">Pendientes</button>
+                <button type="button" data-filtro="completadas" aria-pressed="true">Completadas</button>
+            </div>
+            <ul id="lista" class="lista"></ul>
+            <p id="vacio" class="vacio">Todavía no hay tareas en esta vista</p>
+        </section>
+    </main>
+    <footer class="contenedor pie">Práctica en clase - HTML5 + CSS3 + JavaScript</footer>
+    <script src="app.js"></script>
+</body>
+</html>
