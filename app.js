@@ -144,7 +144,36 @@ function renderizar() {
 }
 
 //------------------------------------------------------------------------------------------------
+lista.addEventListener("click", (evento) => {
+    //Busca el botón presionado
+    const boton = evento.target.closests("button[data-accion]");
 
+    if (!boton){
+        return;
+    }
+    // dataset.id llega como texto, convertirlo a número
+    const is = Number(boton.dataset.id);
+    //f buscar la posición de la tarea en el arreglo
+    const indice = tareas.findIndex( 
+        (tarea) => tarea.id===id
+    );
+
+    if (indice===-1){
+        return;
+    }
+
+    // Completar o reabrir
+    if(boton.dataset.accion==="alternar"){
+        tareas[indice].completada = !tareas[indice].completada;
+    }
+    //Eliminar
+    else if(boton.dataset.accion==="eliminar"){
+        tareas.splice(indice,1);
+    }
+    renderizar();
+
+    
+});
 
 
 //------------------------------------------------------------------------------------------------
